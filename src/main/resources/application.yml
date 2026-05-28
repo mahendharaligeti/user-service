@@ -1,0 +1,13 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: user-service
+  jpa:
+    open-in-view: false
+
+app:
+  jwt:
+    secret: a-256-bit-secret-key-for-hospital-user-service-must-be-256-bits
+    expiration: 86400000

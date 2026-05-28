@@ -15,3 +15,14 @@ spring:
 app:
   jwt:
     secret: ${JWT_SECRET:a-256-bit-secret-key-for-hospital-user-service-must-be-256-bits}
+
+logging:
+  level:
+    root: INFO
+    com.hospital.userservice: INFO
+    org.hibernate.SQL: WARN
+
+management:
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLING_PROBABILITY:0.1}

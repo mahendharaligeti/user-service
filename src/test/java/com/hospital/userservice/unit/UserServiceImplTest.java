@@ -11,6 +11,7 @@ import com.hospital.userservice.exception.UserNotFoundException;
 import com.hospital.userservice.repository.UserRepository;
 import com.hospital.userservice.service.UserServiceImpl;
 import com.hospital.userservice.util.JwtUtil;
+import io.micrometer.observation.ObservationRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,7 +55,7 @@ class UserServiceImplTest {
     @BeforeEach
     void setUp() {
         userService = new UserServiceImpl(userRepository, passwordEncoder, jwtUtil,
-            authenticationManager, userDetailsService);
+            authenticationManager, userDetailsService, ObservationRegistry.NOOP);
     }
 
     @Test

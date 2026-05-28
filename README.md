@@ -8,6 +8,8 @@ A production-ready Spring Boot 3.x microservice for hospital user management wit
 - **JWT Authentication** with role-based access control
 - **Spring Security** with BCrypt password encoding
 - **H2 Database** for testing, MySQL for development/production
+- **Structured JSON Logging** with request/correlation IDs
+- **OpenTelemetry OTLP Tracing** for APIs, repository/database calls, and outbound HTTP clients
 - **Comprehensive Test Coverage** (Unit & Integration tests with JUnit 5)
 - **Environment-based Configuration** (dev, test, prod profiles)
 - **RESTful API** with proper exception handling
@@ -40,7 +42,12 @@ mvn clean install
 
 ### Run
 ```bash
+# Create local dev database first
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS UserService;"
+
 # Development
+export DB_USERNAME="root"
+export DB_PASSWORD="your-local-password"
 mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=dev"
 
 # Production
@@ -50,6 +57,19 @@ export DB_USERNAME="root"
 export DB_PASSWORD="password"
 mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=prod"
 ```
+
+### Observability
+Logs are emitted as JSON and include `requestId`/`correlationId` when requests pass through the API. Send either `X-Correlation-Id` or `X-Request-Id` from clients to reuse an existing request ID; otherwise the service creates one and returns it in both response headers.
+
+Traces are exported over OTLP HTTP. By default the service sends traces to `http://localhost:4318/v1/traces`.
+
+```bash
+export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318/v1/traces"
+export TRACING_SAMPLING_PROBABILITY="1.0"
+mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=dev"
+```
+
+The service traces inbound API calls automatically through Spring Boot Actuator/Micrometer, wraps repository/database calls with named observations such as `db.user.find-by-id`, and provides an observed `RestTemplate` bean for future service-to-service HTTP calls.
 
 ### Test
 ```bash
